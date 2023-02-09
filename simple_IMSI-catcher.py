@@ -26,6 +26,7 @@ from optparse import OptionParser
 import datetime
 import io
 import socket
+from jimner import jimner
 
 imsitracker = None
 
@@ -564,8 +565,65 @@ def find_imsi_from_pkt(p):
     udpdata = bytes(p[UDP].payload)
     find_imsi(udpdata)
 
+def print_banner():
+    END = '\033[0m'
+    print('')
+    padding = '  '
+
+    a=jimner()
+
+    a.get_banner_from_text('ANSI Shadow','IMSI Catcher')
+    a.get_banner_from_text('Calvin S','By')
+
+    B = [   ['', '┬', '─', '', '┐'], 
+            ['', '├', '─', '', '┤'], 
+            ['', '┴', '─', '', '┘']
+        ]
+
+    I = [   [' ', '┬'], 
+            [' ', '│'], 
+            [' ', '┴']
+        ]
+    L = [   [' ', '┬',' ', ' '], 
+            [' ', '│',' ', ' '], 
+            [' ', '┴','─', '┘']
+        ]	
+    A = [   ['┌','─','┐'], 
+            ['├','─','┤'], 
+            ['┴',' ','┴']
+        ]
+    L2 = [  [' ', '┬',' ', ' '], 
+            [' ', '│',' ', ' '], 
+            [' ', '┴','─', '┘']
+        ]	
+
+    banner = [B,I,L,A,L2]
+    final = []	
+    init_color = 97
+    txt_color = init_color
+    cl = 0
+		
+    for charset in range(0, 3):
+        for pos in range(0, len(banner)):
+            for i in range(0, len(banner[pos][charset])):
+                clr = f'\033[38;5;{txt_color}m'
+                char = f'{clr}{banner[pos][charset][i]}'
+                final.append(char)
+                cl += 1
+                txt_color = txt_color + 36 if cl <= 3 else txt_color
+
+            cl = 0
+
+            txt_color = init_color
+        init_color += 1
+
+        if charset < 2: final.append('\n   ')
+
+    print(f"   {''.join(final)}")
+
 
 if __name__ == "__main__":
+    print_banner()
     imsitracker = tracker()
     parser = OptionParser(usage="%prog: [options]")
     parser.add_option("-a", "--alltmsi", action="store_true", dest="show_all_tmsi", help="Show TMSI who haven't got IMSI (default  : false)")
